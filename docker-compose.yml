@@ -1,0 +1,39 @@
+version: "3"
+services:
+  middletier-db:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: middle-tier
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - middletier-network
+
+  middletier-container:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: fedex-middle-tier
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: jdbc:mysql://middletier-db:3306/middle-tier
+      DATABASE_USERNAME: root
+      DATABASE_PASSWORD: root
+    depends_on:
+      - middletier-db
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - middletier-network
+
+volumes:
+  db-data:
+
+networks:
+  middletier-network:
+    driver: bridge

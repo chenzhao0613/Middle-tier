@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: middletier-db
+  labels:
+    app: middletier-db
+spec:
+  selector:
+    matchLabels:
+      app: middletier-db
+  template:
+    metadata:
+      labels:
+        app: middletier-db
+    spec:
+      containers:
+        - name: middletier-db
+          image: mysql:5.7
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: middle-tier
+            - name: MYSQL_USER
+              value: root
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: middletier-db
+  labels:
+    app: middletier-db
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: middletier-db
+  clusterIP: None
